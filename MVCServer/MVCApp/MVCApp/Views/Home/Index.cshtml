@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Split-file Uploader</h1>
+    <p class="lead">Demo app to show file splitting as a solution to large file uploads</p>
+    <p><a href="http://www.codeproject.com/Articles/1034347/Upload-large-files-to-MVC-WebAPI-using-partitioning" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Client-side split</h2>
+        <p>
+            The client (web or windows), splits a large file into chunks, and sends these to the MVC server
+        </p>
+        <p><a class="btn btn-default" href="/Home/ClientUpload">Click to test &raquo;</a></p>
+    </div>
+    <div class="col-md-6">
+        <h2>Server-side merge</h2>
+        <p>
+            The server expects files named in a particular format, and uses this to merge files back together
+        </p>
+        <p><a class="btn btn-default" href="/Home/ServerMerge">Learn more &raquo;</a></p>
+    </div>
+</div>

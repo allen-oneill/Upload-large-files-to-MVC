@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Server-side merge code";
+}
+<h2>@ViewBag.Title.</h2>
+
+
+<p>The following code parses on incoming filename,. and if all parts are present, merges the partition parts back together. See utils.cs</p>
+<code>
+    <pre>
+    public bool MergeFile(string FileName)
+    {
+    bool rslt = false;
+    string partToken = ".part_";
+    string baseFileName = FileName.Substring(0, FileName.IndexOf(partToken));
+    string trailingTokens = FileName.Substring(FileName.IndexOf(partToken) + partToken.Length);
+    int FileIndex = 0;
+    int FileCount = 0;
+    int.TryParse(trailingTokens.Substring(0, trailingTokens.IndexOf(".")), out FileIndex);
+    int.TryParse(trailingTokens.Substring(trailingTokens.IndexOf(".") + 1), out FileCount);
+    string Searchpattern = Path.GetFileName(baseFileName) + partToken + "*";
+    string[] FilesList = Directory.GetFiles(Path.GetDirectoryName(FileName), Searchpattern);
+    if (FilesList.Count() == FileCount) 
+    //  merge .. improvement would be to confirm individual parts are there / correctly in sequence, a security check would also be important
+    {
+    List &lt;SortedFile&gt; MergeList = new List &lt;SortedFile&gt;();
+            foreach (string File in FilesList)
+            {
+            SortedFile sFile = new SortedFile();
+            sFile.FileName = File;
+            baseFileName = File.Substring(0, File.IndexOf(partToken));
+            trailingTokens = File.Substring(File.IndexOf(partToken) + partToken.Length);
+            int.TryParse(trailingTokens.Substring(0, trailingTokens.IndexOf(".")), out FileIndex);
+            sFile.FileOrder = FileIndex;
+            MergeList.Add(sFile);
+            }
+            var MergeOrder = MergeList.OrderBy(s => s.FileOrder).ToList(); // ensure we merge back in the correct order
+            using (FileStream FS = new FileStream(baseFileName, FileMode.Create))
+                {
+                foreach (var chunk in MergeOrder)
+                    {
+                    using (FileStream fileChunk = new FileStream(chunk.FileName, FileMode.Open))
+                        {
+                        fileChunk.CopyTo(FS);
+                        }
+                    }
+                }
+            rslt = true;
+            }
+            return rslt;
+      }
+    }
+</pre>
+</code>
+
